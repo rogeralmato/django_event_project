@@ -1,6 +1,8 @@
 from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from django.contrib.auth.models import User
+from website.models import Event, EventState
 
 class TestWebsitetHomePageChrome(TestCase):
 
@@ -40,7 +42,30 @@ class TestWebsitetHomePageChrome(TestCase):
         self.assertEquals(
             self.chrome.current_url,
             self.register_url
-        )         
+        )
+
+    def test_see_event_home_page(self):
+        
+
+        self.user = User.objects.create_user(username='testusername', password='test_pass', email='testemail@email.com')
+        self.state = EventState.objects.create(
+            state='public'
+        )
+        self.event = Event(
+            title="Test title",
+            description="This is a test description for the event.",
+            exerpt="This is a short exerpt.",
+            state=self.state,
+            author=self.user
+        )
+        self.event.save()
+        
+        self.chrome.get('http://web:8000')
+        self.assertEquals(
+            self.chrome.find_element_by_class_name('btn-info').text,
+            'Read More'
+        )
+
 
 class TestWebsitetHomePageFirefox(TestCase):
 
@@ -80,6 +105,28 @@ class TestWebsitetHomePageFirefox(TestCase):
         self.assertEquals(
             self.firefox.current_url,
             self.register_url
+        )
+
+    def test_see_event_home_page(self):
+        
+
+        self.user = User.objects.create_user(username='testusername', password='test_pass', email='testemail@email.com')
+        self.state = EventState.objects.create(
+            state='public'
+        )
+        self.event = Event(
+            title="Test title",
+            description="This is a test description for the event.",
+            exerpt="This is a short exerpt.",
+            state=self.state,
+            author=self.user
+        )
+        self.event.save()
+        
+        self.firefox.get('http://web:8000')
+        self.assertEquals(
+            self.firefox.find_element_by_class_name('btn-info').text,
+            'Read More'
         )
 
     
