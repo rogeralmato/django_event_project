@@ -33,6 +33,7 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse('home')
 
+    @property
     def total_subs(self):
         """
         Get the total users subscrived for an event

@@ -24,10 +24,6 @@ class TestUrls(SimpleTestCase):
         resolver = resolve(reverse('delete_event', args=[1]))
         self.assertEquals(resolver.func.view_class, views.DeleteEventView)
 
-    def test_filter_event_url_is_resolved(self):
-        resolver = resolve(reverse('filter_event', args=['public']))
-        self.assertEquals(resolver.func.view_class, views.FilterEventsByStateView)
-
     def test_user_event_url_is_resolved(self):
         resolver = resolve(reverse('user_event'))
         self.assertEquals(resolver.func.view_class, views.UserEventView)
