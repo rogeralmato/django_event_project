@@ -1,0 +1,118 @@
+
+
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}
+{{ event.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="">
+    
+    <div class="row">
+        <div class="col-8">
+            <div class="card">
+
+                <!--
+                <div class="card-header">
+                    <div class="col-lg-6"><h1 class="box-title">{{ event.title }} </h1></div>
+                    <p> By: {{ event.author.first_name }} {{ event.author.last_name }}</p>
+                    <p> {{ event.publication_date }}</p>
+                </div>
+                <div class="card-body card-block">
+                    <br/>
+                    <label class="form-control-label">{{ event.description }}</label>
+                </div>
+                <div>
+                    
+                    <button  id="subs_func" data-catid="{{event.id}}" class="btn btn-mini btn-primary" type="button" >LIKE</button>
+                    <p id='subs_count'>{{event.subscription.count}}</p>
+                </div>
+
+
+                -->
+
+                <div class="card-body">
+                <div>
+                    <div style="float: left;">
+                        <strong class="card-title-event pl-0">{{ event.title }}</strong>
+                    </div> 
+                    
+                </div>
+                
+                <div style="clear:both">
+                    <small class="text-muted cat" >
+                        <i class="fa fa-calendar text-info"></i> {{ event.publication_date}}
+                    </small>
+                </div>
+                <img src="{{event.header_image.url}}" alt="" style="width:100%;">
+                <h5 class="text-sm mt-2 mb-1">{{ event.description|safe }}</h5>
+                <p class="card-text"></p>
+                
+            </div>
+
+                
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align: center; margin-bottom: 5px;">{% trans "Subscription Details" %}</h4>
+                </div>
+                
+                <div class="card-body">
+                    
+                    <div class="stat-widget-five">
+                        
+                        <div class="stat-icon dib flat-color-4">
+                            <i class="pe-7s-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="text-left dib">
+                                <div class="stat-text"><p id='subs_count' >{{event.subscriptions.count}}</p></div>
+                                <div class="stat-heading">{% trans "People Subscrived" %}</div> 
+                                
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            {% if user.is_authenticated %}
+                                    <hr>
+                                    <input type="text" id="description_sub" placeholder="Enter subscription comment" class="form-control">
+                                    <button  id="subs_func" sub_stat ="{{is_subscrived}}" data-eventid="{{event.id}}" type="button" style="margin-top: 10px;" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>&nbsp;{% trans "Subscrive" %}</button>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-user"></i><strong class="card-title pl-2">Event Author</strong>
+                </div>
+                <div class="card-body">
+                    <div class="mx-auto d-block">
+                        <img class="rounded-circle mx-auto d-block" src="{{ event.author.profile.profile_pic.url}}" style="width: 150px;" alt="Card image cap">
+                        <p class="text-sm-center card-text">{% trans "Username: " %} {{ event.author }}</p>
+                        <p class="text-sm-center card-text">{% trans "First name: " %} {{ event.author.first_name }}</p>
+                        <p class="text-sm-center card-text">{% trans "Last name: " %} {{ event.author.last_name }}</p>
+                        <a href="{% url 'profile' event.author.profile.id %}"><button type="button" class="btn btn-outline-danger btn-lg btn-sm btn-block">{% trans "View Profile" %}</button></a>
+                    </div>
+                    
+                    
+                </div>
+                
+            </div>
+            
+            
+        </div>
+        
+    </div>
+</div>
+<h1></h1>
+
+
+<br/><br/>
+<a href="{% url 'home' %}">Back</a>
+{% endblock %}
+

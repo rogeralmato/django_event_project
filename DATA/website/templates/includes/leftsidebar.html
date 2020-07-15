@@ -1,0 +1,48 @@
+    <!-- Left Panel -->
+    {% load i18n %}
+    {% url 'home' as home_url %}
+    {% url 'add_event' as new_event %}
+    {% url 'user_event' as user_event %}
+    {% url 'user_draft_event' as user_draft_event %}
+    
+    <aside id="left-panel" class="left-panel">
+        <nav class="navbar navbar-expand-sm navbar-default">
+            <div id="main-menu" class="main-menu collapse navbar-collapse">
+                
+                <ul class="nav navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li {% if request.path == home_url %} class="active"{% endif %}>
+                        <a href="{% url 'home' %}"><i class="menu-icon fa fa-laptop"></i>{% trans "All Events" %}</a>
+                    </li>
+                    <li {% if request.path == user_event %} class="active"{% endif %}>
+                        <a href="{% url 'user_event' %}"><i class="menu-icon fa fa-laptop"></i>{% trans "My Events" %}</a>
+                    </li>
+                    <li class="menu-title">{% trans "User Events" %}</li><!-- /.menu-title -->
+                    <li class="menu-item-has-children dropdown">
+                        <li {% if request.path == new_event %} class="active"{% endif %}>
+                            <a href="{% url 'add_event' %}"><i class="menu-icon fa fa-pencil"></i>{% trans "Create Event" %}</a>
+                        </li>
+                        <li {% if request.path == user_draft_event %} class="active"{% endif %}>
+                            <a href="{% url 'user_draft_event' %}"><i class="menu-icon fa fa-edit"></i>{% trans "Draft Events" %}</a>
+                        </li>
+                    </li>
+
+                    
+                      
+                
+                {% else %}
+                    <li class="active">
+                        <a href="{% url 'login' %}"><i class="menu-icon fa fa-laptop"></i>{% trans "Login" %} </a>
+                    </li>
+                    <li class="active">
+                        <a href="{% url 'logout' %}"><i class="menu-icon fa fa-pencil"></i>{% trans "Register" %}</a>
+                    </li>
+
+                
+                {% endif %}
+                
+            </ul>
+            </div><!-- /.navbar-collapse -->
+        </nav>
+    </aside>
+    <!-- /#left-panel -->

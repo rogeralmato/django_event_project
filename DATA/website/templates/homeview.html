@@ -1,0 +1,64 @@
+
+{% extends "layouts/base.html" %}
+{% load i18n %}
+
+
+{% block title %}
+{% trans Home %}
+{% endblock %}
+
+
+{% block content %}
+
+<h1>{% trans "List of Events" %}</h1>
+<br/>
+
+
+{% for event in object_list %}
+
+<div class="container">
+  <div class="row">
+      <div class="col-sm-12">
+          <div class="card">
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col-sm-6">
+                          <h5 class="card-title">{{ event.title }}</h5>
+                          <small class="text-muted cat">
+                            <i class="fa fa-calendar text-info"></i> {{ event.publication_date}}
+                          </small>
+                          <p class="card-text">{{ event.exerpt }}</p>
+                          <a href="{% url 'event_detail' event.pk %}" class="btn btn-info">{% trans "Read More" %}</a>
+                          
+                      </div>
+                      
+                      <div class="col-sm-6 text-right">
+                        <img class="img-home" src="{{event.header_image.url}}" alt="">
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted d-flex justify-content-between bg-transparent border-top-0">
+                {% if user.is_authenticated and user.id == event.author.id %}
+                <a href="{% url 'update_event' event.pk %}" class="btn btn-outline-danger btn-sm" style="float: right;">{% trans "Edit" %}</a>
+                {% else %}
+                <div class="views">{% trans "User: "%} {{ event.author }}
+                </div>
+                {% endif %}
+                <div class="stats">
+                    <i>{{ event.state }} &nbsp;</i> 
+                     <i class="fa fa-ticket"></i> {{event.subscriptions.count}}
+                </div>
+                 
+              </div>
+          </div>
+          
+      </div>
+  </div>
+</div>
+
+
+{% endfor %}
+
+
+
+{% endblock %}

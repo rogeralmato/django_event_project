@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+{% trans "Profile" %}
+{% endblock %}
+{% trans "Profile Page" %}
+{% block content %}
+<link href="{% static 'authentication/css/styles.css' %}" rel="stylesheet">
+<body>
+   
+
+    <header class="main-header">
+      <img src="{{ page_user.profile_pic.url}}" alt="Drawing of a cat eating pizza" class="profile-image">
+      <h1 class="tag name">{% trans "Hello, I’m " %} {{page_user}}.</h1>
+      <p class="tag location">{% trans "Joined " %} {{page_user.user.date_joined|date:"F Y" }}</p>
+    </header>
+
+    <main class="flex">
+     
+    <div class="card">
+      <h2>{% trans "User Bio" %}</h2>
+      <p>{{page_user.bio}}</p>
+    </div> 
+
+    <div class="card overflow-hidden">
+      <h2>{% trans "User Stats" %}</h2>
+      <div class="card-body">
+          <div class="media bg-primary white">
+              <div class="media-left bg-primary bg-darken-2 p-2 media-middle">
+                  <i class="icon-pencil font-large-2 white"></i>
+              </div>
+              <div class="media-body p-2">
+                  <h4>{% trans "Public Events" %}</h4>
+              </div>
+              <div class="media-right p-2 media-middle">
+                  <h3>{{num_public_events}}</h3>
+              </div>
+          </div>
+      </div>
+      <div class="card-body">
+        <div class="media bg-warning white">
+            <div class="media-left bg-warning bg-darken-2 p-2 media-middle">
+                <i class="icon-pencil font-large-2 white"></i>
+            </div>
+            <div class="media-body p-2">
+                <h4>{% trans "Private Events" %}</h4>
+            </div>
+            <div class="media-right p-2 media-middle">
+                <h3>{{num_private_events}}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+      <div class="media bg-success white">
+          <div class="media-left bg-success bg-darken-2 p-2 media-middle">
+              <i class="icon-pencil font-large-2 white"></i>
+          </div>
+          <div class="media-body p-2">
+              <h4>{% trans "Draft Events" %}</h4>
+          </div>
+          <div class="media-right p-2 media-middle">
+            <h3>{{num_draft_events}}</h3>
+          </div>
+      </div>
+  </div>
+  </div>
+    </main>
+    
+
+  </body>
+  
+
+{% endblock %}

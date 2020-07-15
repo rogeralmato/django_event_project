@@ -1,0 +1,203 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Roger Almató <r.almato.baucells@gmail.com>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-14 15:45+0000\n"
+"PO-Revision-Date: 2020-07-14 HO:MI+ZONE\n"
+"Last-Translator: Roger Almató <r.almato.baucells@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"opportiunity_network-1: PACKAGE VERSION\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication/templates/registration/edit_settings.html:11
+#: authentication/templates/registration/profile.html:6
+msgid "Profile"
+msgstr "Mi Perfil"
+
+#: authentication/templates/registration/edit_settings.html:59
+#: website/templates/add_event.html:20 website/templates/update_event.html:21
+msgid "Save"
+msgstr "Guardar"
+
+#: authentication/templates/registration/login.html:11
+#: website/templates/includes/leftsidebar.html:35
+msgid "Login"
+msgstr "Iniciar Sesión"
+
+#: authentication/templates/registration/login.html:59
+#: authentication/templates/registration/register.html:67
+msgid "Sign in"
+msgstr "Iniciar Sesión"
+
+#: authentication/templates/registration/login.html:68
+msgid "Don't have account ?"
+msgstr "¿No dispones de una cuenta? "
+
+#: authentication/templates/registration/login.html:68
+msgid "Sign Up Here"
+msgstr "Registrate aquí"
+
+#: authentication/templates/registration/password.html:11
+#: authentication/templates/registration/password.html:59
+msgid "Change Password"
+msgstr "Modifica tu contraseña"
+
+#: authentication/templates/registration/profile.html:8
+msgid "Profile Page"
+msgstr "Mi Perfil"
+
+#: authentication/templates/registration/profile.html:16
+msgid "Hello, I’m "
+msgstr "Hola, soy "
+
+#: authentication/templates/registration/profile.html:17
+msgid "Joined "
+msgstr "Se unió el"
+
+#: authentication/templates/registration/profile.html:23
+msgid "User Bio"
+msgstr "Biografía: "
+
+#: authentication/templates/registration/profile.html:28
+#| msgid "User Events"
+msgid "User Stats"
+msgstr "Datos Eventos Usuario"
+
+#: authentication/templates/registration/profile.html:35
+msgid "Public Events"
+msgstr "Eventos públicos"
+
+#: authentication/templates/registration/profile.html:48
+msgid "Private Events"
+msgstr "Eventos privados"
+
+#: authentication/templates/registration/profile.html:61
+#: website/templates/includes/leftsidebar.html:26
+msgid "Draft Events"
+msgstr "Eventos borradores"
+
+#: authentication/templates/registration/register.html:11
+msgid "Registration"
+msgstr "Registrarse"
+
+#: authentication/templates/registration/register.html:67
+msgid "Already have account ?"
+msgstr "¿Dispones de una cuenta?"
+
+#: opportiunity_network/settings.py:132
+msgid "English"
+msgstr "Inglés"
+
+#: opportiunity_network/settings.py:133
+msgid "Spanish"
+msgstr "Español"
+
+#: website/templates/add_event.html:5
+msgid "New Event"
+msgstr "Nuevo evento"
+
+#: website/templates/add_event.html:9
+msgid "Create New Event"
+msgstr "Crear Evento"
+
+#: website/templates/delete_event.html:4 website/templates/delete_event.html:8
+#: website/templates/delete_event.html:21
+msgid "Delete Event"
+msgstr "Crear Evento"
+
+#: website/templates/delete_event.html:14
+msgid "Delete: "
+msgstr "Eliminar"
+
+#: website/templates/delete_event.html:20
+msgid "Are you sure?"
+msgstr "¿Estás seguro?"
+
+#: website/templates/event_details.html:62
+msgid "Subscription Details"
+msgstr "Formulario Subscripción"
+
+#: website/templates/event_details.html:75
+msgid "People Subscrived"
+msgstr "Personas susscritas"
+
+#: website/templates/event_details.html:83
+msgid "Subscrive"
+msgstr "Suscribir"
+
+#: website/templates/event_details.html:96
+msgid "Username: "
+msgstr "Usuario: "
+
+#: website/templates/event_details.html:97
+msgid "First name: "
+msgstr "Nombre: "
+
+#: website/templates/event_details.html:98
+msgid "Last name: "
+msgstr "Apellido: "
+
+#: website/templates/event_details.html:99
+msgid "View Profile"
+msgstr "Ver Perfil"
+
+#: website/templates/homeview.html:13
+msgid "List of Events"
+msgstr "Lista de eventos"
+
+#: website/templates/homeview.html:31
+msgid "Read More"
+msgstr "Leer Más"
+
+#: website/templates/homeview.html:42
+msgid "Edit"
+msgstr "Editar"
+
+#: website/templates/homeview.html:44
+msgid "User: "
+msgstr "Usuario: "
+
+#: website/templates/includes/header.html:35
+msgid "My Profile"
+msgstr "Mi Perfil"
+
+#: website/templates/includes/header.html:36
+msgid "Edit Profile"
+msgstr "Editar Perfil"
+
+#: website/templates/includes/header.html:37
+msgid "Logout"
+msgstr "Cerrar Sessión"
+
+#: website/templates/includes/leftsidebar.html:15
+msgid "All Events"
+msgstr "Todos los Eventos"
+
+#: website/templates/includes/leftsidebar.html:18
+msgid "My Events"
+msgstr "Mis Eventos"
+
+#: website/templates/includes/leftsidebar.html:20
+msgid "User Events"
+msgstr "Usuario"
+
+#: website/templates/includes/leftsidebar.html:23
+msgid "Create Event"
+msgstr "Crear Evento"
+
+#: website/templates/includes/leftsidebar.html:38
+msgid "Register"
+msgstr "Registrarse"
+
+#: website/templates/update_event.html:5 website/templates/update_event.html:10
+msgid "Edit Event"
+msgstr "Editar Evento"
