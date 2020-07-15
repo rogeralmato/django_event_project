@@ -1,2 +1,2 @@
-# django_blog_project
-Django blog project
+# django Events Site Project
+Django event project
