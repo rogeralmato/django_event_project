@@ -61,7 +61,7 @@ class EditProfileForm(forms.ModelForm):
         super(EditProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['bio'].widget.attrs['class'] = 'form-control'
-        self.fields['profile_pic'].widget.attrs['class'] = 'form-control'
+        #self.fields['profile_pic'].widget.attrs['class'] = 'form-control'
 
 
 

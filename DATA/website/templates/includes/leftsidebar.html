@@ -31,11 +31,11 @@
                       
                 
                 {% else %}
-                    <li class="active">
+                    <li class="active" id="home-login">
                         <a href="{% url 'login' %}"><i class="menu-icon fa fa-laptop"></i>{% trans "Login" %} </a>
                     </li>
-                    <li class="active">
-                        <a href="{% url 'logout' %}"><i class="menu-icon fa fa-pencil"></i>{% trans "Register" %}</a>
+                    <li class="active" id="home-register">
+                        <a href="{% url 'register' %}"><i class="menu-icon fa fa-pencil"></i>{% trans "Register" %}</a>
                     </li>
 
                 

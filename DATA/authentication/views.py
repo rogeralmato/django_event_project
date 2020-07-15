@@ -13,22 +13,18 @@ from website.models import Profile, Event
 class PasswordChangeView(PasswordChangeView):
     form_class = PasswordChangingForm
     success_url = reverse_lazy('home')
-"""
-class UserRegisterView(generic.CreateView):
-    form_class = SignUpForm
-    template_name = 'registration/register.html'
-    success_url = reverse_lazy('login')
-    """
+
 
 def register(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
-        profile_form = SignUpProfileForm(request.POST)
+        profile_form = SignUpProfileForm(request.POST, request.FILES)
 
         if form.is_valid() and profile_form.is_valid():
             user = form.save()
 
             profile = profile_form.save(commit=False)
+            print(profile.profile_pic)
             profile.user = user
             profile.save()
 
@@ -44,12 +40,13 @@ def edit_settings(request):
     user = get_object_or_404(User, id=request.user.id)
     if request.method == "POST":
         form = EditUserForm(request.POST, instance=user)
-        profile_form = EditProfileForm(request.POST, instance=user.profile)
+        profile_form = EditProfileForm(request.POST, request.FILES, instance=user.profile)
 
         if form.is_valid() and profile_form.is_valid():
             user = form.save()
-
+            print(profile_form)
             profile = profile_form.save(commit=False)
+            print(profile.profile_pic)
             profile.user = user
             profile.save()
 
