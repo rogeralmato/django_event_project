@@ -114,6 +114,7 @@ def subscription_toggle(request):
     if event_id != None:
         event = Event.objects.get(id=int(event_id))
         user = User.objects.get(id=request.user.id)
+        email = user.email
         if event:
             if sub_status:
                 subs = event.subscriptions.get(assistant__id=user.id)
@@ -127,6 +128,27 @@ def subscription_toggle(request):
             sub_status = not sub_status
             num_subs = event.subscriptions.count()
 
-    ctx = {'num_subs': num_subs, 'sub_status': sub_status}
+    ctx = {'num_subs': num_subs, 'sub_status': sub_status, 'email': email}
+
+    return HttpResponse(json.dumps(ctx), content_type='application/json')
+
+def subscription_not_logged_toggle(request):
+    context = RequestContext(request)
+    num_subs = 0
+    if request.method == 'GET':
+        event_id = request.GET['event_id']
+        email = request.GET['subs_email']
+        comment = request.GET['subs_comment']
+    
+    if event_id != None:
+        event = Event.objects.get(id=int(event_id))
+        if event:
+            event_subs = EventSubscription(assistant=None, comment=comment, email=email)
+            event_subs.save()
+            event.subscriptions.add(event_subs)
+            event.save()
+            num_subs = event.subscriptions.count()
+
+    ctx = {'num_subs': num_subs}
 
     return HttpResponse(json.dumps(ctx), content_type='application/json')

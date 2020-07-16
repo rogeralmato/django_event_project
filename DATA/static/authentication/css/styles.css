@@ -3,14 +3,7 @@
     box-sizing: border-box;
   }
     
-  body {
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    font-family: 'Roboto', sans-serif;
-    color: #222;
-    background: #f7f5f0;
-  }
+
   /* Link Styles */
   
   a {
@@ -85,15 +78,8 @@
   .card:hover, .contact-card:hover {
     border-color: #080F08;
   }
-  
-  h2  {
-    text-align: center;
-  }
-  
-  ul.skills {
-    padding: 0;
-    text-align: center;
-  }
+
+
   
   .skills li {
     border-radius: 6px;
@@ -195,10 +181,7 @@
       min-height: 470px;
     }
   
-    .nav {
-      max-width: 1200px;
-      padding: 0 30px;
-    }
+
   
   
     main {

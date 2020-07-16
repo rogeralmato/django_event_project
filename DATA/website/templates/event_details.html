@@ -52,9 +52,27 @@
                 <p class="card-text"></p>
                 
             </div>
-
+        </div>
+        <div class="card">
+            <div class="card-header"><strong class="card-title pl-2">{% trans "People Going" %}</strong></div>
+            {% for subs in event.subscriptions.all %}
+            
+                <div class="card-body" id="assistant_card">
+                                {% if subs.assistant %}
+                                <div class="stat-text"><p><strong>Email: </strong>{{subs.assistant.email}}</p></div>
+                                <div class="stat-text"><p><strong>Comment: </strong>{{subs.comment}}</p></div>
+                                {% else %}
+                                <div class="stat-text"><p><strong>Email: </strong>{{subs.email}}</p></div>
+                                <div class="stat-text"><p><strong>Comment: </strong>{{subs.comment}}</p></div>
+                                {% endif %}
+                            </div>
+            
+            {% endfor %}
+        </div>
+           
                 
-            </div>
+            
+            
         </div>
         <div class="col-4">
             <div class="card">
@@ -80,9 +98,16 @@
                             {% if user.is_authenticated %}
                                     <hr>
                                     <input type="text" id="description_sub" placeholder="Enter subscription comment" class="form-control">
-                                    <button  id="subs_func" sub_stat ="{{is_subscrived}}" data-eventid="{{event.id}}" type="button" style="margin-top: 10px;" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>&nbsp;{% trans "Subscrive" %}</button>
-                                {% endif %}
+                                    <button id="subs_func" sub_stat ="{{is_subscrived}}" data-eventid="{{event.id}}" type="button" style="margin-top: 10px;" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>&nbsp;{% trans "Subscrive" %}</button>
+                            
+                            {% else %}
+                            <hr>
+                            <input type="text" id="description_not_log" placeholder="Enter subscription comment" class="form-control">
+                            <input style="margin-top: 5px;" type="email" id="email_not_log" placeholder="Enter an email address" class="form-control">
+                            <button id="not_logged_subs" data-eventid="{{event.id}}" type="button" style="margin-top: 10px;" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>&nbsp;{% trans "Subscrive" %}</button>
+                            {% endif %}
                         </div>
+                            
                     </div>
                 </div>
             </div>
@@ -103,6 +128,7 @@
                 </div>
                 
             </div>
+            
             
             
         </div>

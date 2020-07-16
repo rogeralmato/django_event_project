@@ -14,8 +14,14 @@ class EventState(models.Model):
         return reverse('home')
 
 class EventSubscription(models.Model):
-    assistant = models.ForeignKey(User, on_delete=models.CASCADE)
+    assistant = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, default=None)
+    
+    def clean(self):
+        super(EventSubscription, self).clean()
+        if self.email is None and self.assistant is None:
+            raise ValidationError('Error! Please fill the fields.')
 
 class Event(models.Model):
     title = models.CharField(max_length=150)
