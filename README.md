@@ -190,7 +190,21 @@ The only requirement is to hava a computer or server in which `Docker` can be in
 ### Installation
 Once docker is installed on your machine we can proceed with the project installation.
 
+```
+git clone https://github.com/rogeralmato/django_event_project.git
+cd django_event_project
+```
+
 ### Deployment
+Finally, we can deploy the django project by:
+```
+docker-compose up -d
+```
+It will take a while to install all the project and containers dependencies. When it's done, in order to see the django project, in your browser go to:
+
+[http://0.0.0.0:8000/](http://0.0.0.0:8000/)
+
+![Home Page](https://i.ibb.co/Z8G9nxv/Screenshot-2020-07-16-at-09-39-42.png)
 
 ## System Architecture
 
