@@ -36,20 +36,20 @@ This is a Django Events site project. The main idea is to create a site where us
     - [Selenium Hub Container](#selenium-hub-container)
     - [Desktop Chrome Selenium node](#desktop-chrome-selenium-node)
     - [Desktop Firefox Selenium node](#desktop-firefox-selenium-node)
-  - [Project Arhitecture](#project-arhitecture)
+  - [Django Project Arhitecture](#django-project-arhitecture)
     - [Website Django App](#website-django-app)
     - [Authentification Django App](#authentification-django-app)
     - [Functional tests Folder](#functional-tests-folder)
-  - [Project Models](#project-models)
+  - [Django Project Models](#django-project-models)
     - [Event Model (website)](#event-model-website)
     - [EventState  Model  (website)](#eventstate-model-website)
     - [EventSubscription Model (website)](#eventsubscription-model-website)
     - [Profile Model (website)](#profile-model-website)
     - [User Model (authentification)](#user-model-authentification)
-  - [Project Views](#project-views)
-  - [Project Forms](#project-forms)
-  - [Unit Tests](#unit-tests)
-  - [Functional Tests](#functional-tests)
+  - [Django Project Views](#django-project-views)
+  - [Django Project Forms](#django-project-forms)
+  - [Django Unit Tests](#django-unit-tests)
+  - [Django Functional Tests](#django-functional-tests)
   - [Frontend](#frontend)
     - [Theme Used](#theme-used)
     - [Client Side](#client-side)
@@ -250,8 +250,91 @@ As we previously explained, the Django app is developed as a microservice for al
 * Desktop Chrome Selenium node
 * Desktop Firefox Selenium node
 
+Docker-compose code:
+```
+version: '3'
+    
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./DATA:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - selenium_hub
+      - selenium_chrome
+
+  selenium_hub:
+    container_name: selenium_hub
+    image: selenium/hub
+    ports:
+      - "4444:4444"
+  selenium_chrome:
+    container_name: selenium_chrome
+    image: selenium/node-chrome-debug
+    environment:
+      - HUB_HOST=selenium_hub
+      - HUB_PORT=4444
+    ports:
+      - "5900:5900"
+    depends_on:
+      - selenium_hub
+  selenium_firefox:
+    container_name: selenium_firefox
+    image: selenium/node-firefox-debug
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=selenium_hub
+      - HUB_PORT_4444_TCP_PORT=4444
+    ports:
+      - "5901:5900"
+    depends_on:
+      - selenium_hub
+
+```
+
 ### Project Container (django)
 Is the main container of the project and contains de Django web app and all it's dependences. We will go through all the details in the project architectures, models, views, forms, unit tests and functional tests sections.
+
+Dockerfile of the container:
+```
+FROM python:3
+ENV PYTHONUNBUFFERED 1
+RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
+RUN apt-get install -y \
+    libffi-dev \
+    libssl-dev \
+    default-libmysqlclient-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zlib1g-dev \
+    net-tools \
+    vim
+RUN apt-get install gettext -y
+
+RUN mkdir /code
+WORKDIR /code
+COPY requirements.txt /code/
+RUN pip install -r requirements.txt
+COPY . /code/
+
+EXPOSE 8000
+STOPSIGNAL SIGINT
+```
 
 ### Postgress Container
 This is a database container which contains all the information for the django container. It has been separed from the django app in another container for the following reasons:
@@ -272,25 +355,68 @@ Container which contains all the dependences to act as a webdriver for a seleniu
 ### Desktop Firefox Selenium node
 Container which contains all the dependences to act as a webdriver for a selenium functional test acting like a desktop computer with firefox browser.
 
-## Project Arhitecture
-### Website Django App
-### Authentification Django App
-### Functional tests Folder
+## Django Project Arhitecture
+In this section we will go through the django apps inside the django project. Django structure is intended to separate the functionalities over different apps in the same project.
 
-## Project Models 
+### Website Django App
+This is the main app and contains all the development for the website and events.
+
+### Authentification Django App
+The project uses the default Django authentification system because it is very secure and elaborated. It has been develop in separeted app. It is true that in the website django app the `auth` model has been extended, but the login and registration is being done with the defualt django auth mdoel.
+
+### Functional tests Folder
+This folder contains all the functional test using the selenium-hub container. It tests all the main features of the app. 
+
+## Django Project Models 
+As we said previously, the django project has two apps, one for the website and the other one for the django authentification system. In this section we will go through the models in the django website app.
+
 ### Event Model (website)
+```
+class Event(models.Model):
+    title = models.CharField(max_length=150)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = RichTextField(blank=True, null=True)
+    exerpt = models.CharField(max_length=255)
+    header_image = models.ImageField(null=True, blank=True, upload_to='images/', default='images/default_image.png') # in a production enviroment that would be an aws media storage or similar
+    publication_date = models.DateField(auto_now_add=True)
+    state = models.ForeignKey(EventState, on_delete=models.CASCADE, default='public')
+    subscriptions = models.ManyToManyField(EventSubscription)
+
+    def __str__(self):
+        return self.title + ' | ' + str(self.author)
+
+    def get_absolute_url(self):
+        return reverse('home')
+
+    @property
+    def total_subs(self):
+        """
+        Get the total users subscrived for an event
+        :return: Integer: Total subs of the event
+        """
+        self.subscriptions.count()
+```
+The Event model has all the information which an event needs. Point out that it has a OneToMany (`ForeignKey`) relationship with the State model and a ManyToMany relationship with the EventSubscription model.
+
 ### EventState  Model  (website)
 ### EventSubscription Model (website)
 ### Profile Model (website)
 ### User Model (authentification)
 
-## Project Views
+## Django Project Views
 
-## Project Forms
+## Django Project Forms
 
-## Unit Tests
+## Django Unit Tests
 
-## Functional Tests
+## Django Functional Tests
+As we said, the functional tests are separed in a differnt folder. The tests make use of the selenium-hub container and their nodes (chrome and firefox).
+
+To run the functional tests:
+```
+python3 manage.py test functional_tests
+```
+
 
 ## Frontend
 ### Theme Used
