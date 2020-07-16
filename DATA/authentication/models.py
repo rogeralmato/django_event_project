@@ -1,3 +1,3 @@
 from django.db import models
 
-# Create your models here.
+# No models used because the app uses the default User model

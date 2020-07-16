@@ -11,11 +11,26 @@ from .forms import SignUpForm, EditUserForm, PasswordChangingForm, SignUpProfile
 from website.models import Profile, Event, EventSubscription
 
 class PasswordChangeView(PasswordChangeView):
+    """
+    PasswordChangeView. Class based view to display the password update form.
+
+    Args:
+        PasswordChangeView 
+    """
     form_class = PasswordChangingForm
     success_url = reverse_lazy('home')
 
 
 def register(request):
+    """
+    Function to display the user and profile register forms.
+    We use a function instead of a class based views because class based views
+    don't allow multiple forms together.
+
+    Args:
+        request 
+
+    """
     if request.method == "POST":
         form = SignUpForm(request.POST)
         profile_form = SignUpProfileForm(request.POST, request.FILES)
@@ -24,7 +39,6 @@ def register(request):
             user = form.save()
 
             profile = profile_form.save(commit=False)
-            print(profile.profile_pic)
             profile.user = user
             profile.save()
 
@@ -37,6 +51,15 @@ def register(request):
     return render(request, 'registration/register.html', context)
 
 def edit_settings(request):
+    """
+    Function to display the user and profile update forms.
+    We use a function instead of a class based views because class based views
+    don't allow multiple forms together.
+
+    Args:
+        request 
+
+    """
     user = get_object_or_404(User, id=request.user.id)
     if request.method == "POST":
         form = EditUserForm(request.POST, instance=user)
@@ -44,7 +67,6 @@ def edit_settings(request):
 
         if form.is_valid() and profile_form.is_valid():
             user = form.save()
-            print(profile_form)
             profile = profile_form.save(commit=False)
             print(profile.profile_pic)
             profile.user = user
@@ -59,6 +81,13 @@ def edit_settings(request):
     return render(request, 'registration/edit_settings.html', context)
 
 class ProfilePageView(DetailView):
+    """
+    Class based view to display the profile page view.
+
+    Args:
+        DetailView 
+
+    """
     model = Profile
     template_name = 'registration/profile.html'
 
