@@ -3,6 +3,14 @@ from .models import Event
 
 
 class EventForm(forms.ModelForm):
+    """
+    For for creating a new Event.
+    Args:
+        forms 
+
+    Returns:
+        Form
+    """
     class Meta:
         model = Event
         fields = ('title', 'state', 'exerpt', 'description', 'header_image')
@@ -13,6 +21,7 @@ class EventForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
     def clean(self):
+        # Function to test the values of the form
         super(EventForm, self).clean()
         
         description = self.cleaned_data.get('description')
@@ -23,6 +32,14 @@ class EventForm(forms.ModelForm):
 
 
 class UpdateEventForm(forms.ModelForm):
+    """
+    For for updating an Event.
+    Args:
+        forms 
+
+    Returns:
+        Form
+    """
     class Meta:
         model = Event
         fields = ('title', 'state', 'exerpt', 'description', 'header_image')
