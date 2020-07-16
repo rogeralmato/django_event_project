@@ -4,6 +4,12 @@ from django import forms
 from website.models import Profile
 
 class SignUpForm(UserCreationForm):
+    """
+    Signup form. It uses the UserCreation Form.
+
+    Args:
+        UserCreationForm 
+    """
     email = forms.EmailField()
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
@@ -23,6 +29,12 @@ class SignUpForm(UserCreationForm):
         self.fields['email'].widget.attrs['class'] = 'form-control'
 
 class SignUpProfileForm(forms.ModelForm):
+    """
+    SignUpProfileForm. It creates a new user Profile. 
+
+    Args:
+        ModelForm
+    """
     class Meta:
         model = Profile
         fields = ('bio', 'profile_pic')
@@ -34,6 +46,12 @@ class SignUpProfileForm(forms.ModelForm):
         self.fields['profile_pic'].widget.attrs['class'] = 'form-control'
 
 class EditUserForm(UserChangeForm):
+    """
+    EditUserForm. It edits a current user
+
+    Args:
+        UserChangeForm 
+    """
     username = forms.CharField(max_length=100)
     email = forms.EmailField()
     first_name = forms.CharField(max_length=100)
@@ -52,6 +70,12 @@ class EditUserForm(UserChangeForm):
         self.fields['email'].widget.attrs['class'] = 'form-control'
     
 class EditProfileForm(forms.ModelForm):
+    """
+    EditProfileForm. It edits a current profile.
+
+    Args:
+        ModelForm
+    """
 
     class Meta:
         model = Profile
@@ -64,6 +88,12 @@ class EditProfileForm(forms.ModelForm):
 
 
 class PasswordChangingForm(PasswordChangeForm):
+    """
+    PasswordChangingForm. It updates the user password.
+
+    Args:
+        PasswordChangeForm 
+    """
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))

@@ -394,6 +394,22 @@ As we said previously, the django project has two apps, one for the website and 
 ### Event Model (website)
 ```
 class Event(models.Model):
+    """
+    Event model to represent an event in the web app
+
+    Args:
+        title: title of the event
+        author: author of the event, OneToMany relationship with User model
+        description: description of the event
+        exerpt: short description of the event to be shown at home page
+        header_image: image that represents the event
+        publication_date: when is the event published
+        state: OneToMany relationship with the EventState Model
+        subscriptions: ManyToManyRelationship with the EventSubscriptions Model
+
+    Returns:
+        [Event]: Returns an Event
+    """
     title = models.CharField(max_length=150)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     description = RichTextField(blank=True, null=True)
@@ -407,13 +423,17 @@ class Event(models.Model):
         return self.title + ' | ' + str(self.author)
 
     def get_absolute_url(self):
+        """
+        Get the absolute url to return to home page when viewing an event.
+        Returns: Url path to home page
+        """
         return reverse('home')
 
     @property
     def total_subs(self):
         """
         Get the total users subscrived for an event
-        :return: Integer: Total subs of the event
+        Returns: Integer: Total subs of the event
         """
         self.subscriptions.count()
 ```
@@ -422,6 +442,15 @@ The Event model has all the information which an event needs. Point out that it 
 ### EventState Model (website)
 ```
 class EventState(models.Model):
+    """
+    EventState model to represent a state of the events
+
+    Args:
+        state: string which is an state
+
+    Returns:
+        [EventState]: Returns an EventState
+    """
     state = models.CharField(max_length=100, primary_key=True)
 
     def __str__(self):
@@ -435,6 +464,20 @@ The EventState model has only a state field. It contains three possible EventSta
 ### EventSubscription Model (website)
 ```
 class EventSubscription(models.Model):
+    """
+    EventSubscription model to represent subscriptions of events in the web app
+
+    Args:
+        assistant: registered user or Null, who has subscrived to the event
+        comment: comment of the subscription details
+        email: email of the person who has registered to the email
+
+    Raises:
+        ValidationError: if assistant and email is None
+        
+    Returns:
+        [EventSubscription]: Returns an EventSubscription
+    """
     assistant = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True, default=None)
@@ -449,6 +492,17 @@ The EventSubscription comes from a many to many relationship with the Events. Th
 ### Profile Model (website)
 ```
 class Profile(models.Model):
+    """
+    Profile Model used for extending the Django default User Model.
+
+    Args:
+        user: django default auth model (one to one relation)
+        bio: short description of the user bio
+        profile_pic: profile picture of the user
+
+    Returns:
+        [Profile]: Returns a Profile
+    """
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     bio = models.TextField()
     profile_pic = models.ImageField(upload_to='images/profile/', default='images/profile/default_profile.png')
@@ -467,21 +521,24 @@ Another part in a django project are the views. For the views, the project only 
 ### Home View
 ```
 class HomeView(ListView):
+    """
+    Class based view for the home view.
+
+    Args:
+        model: Event
+        template_name:homeview.html
+
+    """
     model = Event
     template_name = 'homeview.html'
     
     def get_queryset(self):
+        # Query the public events if not logged in and also the private ones if logged in
         ordering = ['-publication_date', '-id']
         if self.request.user.is_authenticated:
             return Event.objects.filter(~Q(state__state = 'draft')).order_by(*ordering)
         else:
             return Event.objects.filter(state__state = 'public').order_by(*ordering)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        subscriptions = EventSubscription.objects.all()
-        context['subscriptions'] = subscriptions
-        return context
 ```
 It is a class based views which inherits from the ListView. It has a `get_queryset` method in order to filter the Event types if the user is authenticated or not.
 
@@ -489,10 +546,19 @@ It is a class based views which inherits from the ListView. It has a `get_querys
 ```
 @method_decorator(login_required, name='dispatch')
 class UserEventView(ListView):
+    """
+    Class based view for the events of a particular User.
+
+    Args:
+        model: Event
+        template_name:homeview.html
+        
+    """
     model = Event
     template_name = 'homeview.html'
     
     def get_queryset(self):
+        # Query the events of the user which are not draft
         ordering = ['-publication_date', '-id']
         return Event.objects.filter(author__id = self.request.user.id).filter(~Q(state__state = 'draft')).order_by(*ordering)
 ```
@@ -502,10 +568,19 @@ It is a class based view which requires the user to be logged in. It has a `get_
 ```
 @method_decorator(login_required, name='dispatch')
 class UserDraftEventView(ListView):
+    """
+    Class based view for the drafts events of a particular User.
+
+    Args:
+        model: Event
+        template_name:homeview.html
+        
+    """
     model = Event
     template_name = 'homeview.html'
     
     def get_queryset(self):
+        # Query only the events of the corresponding user
         ordering = ['-publication_date', '-id']
         return Event.objects.filter(author__id = self.request.user.id).filter(state__state = 'draft').order_by(*ordering)
 ```
@@ -514,10 +589,19 @@ Similar to the previous view, but it displays the user draft events.
 ### Event Detail View
 ```
 class EventDetailView(UserPassesTestMixin, DetailView):
+    """
+    Class based view for the page of a particular event. 
+
+    Args:
+        model: Event
+        template_name:event_details.html
+        
+    """
     model = Event
     template_name = 'event_details.html'
 
     def test_func(self):
+        # Function to make sure that the person who is accessing an event has permisions to do it.
         event = self.get_object()
         if self.request.user.is_authenticated:
             return True
@@ -525,6 +609,7 @@ class EventDetailView(UserPassesTestMixin, DetailView):
             return event.state.state == 'public' 
 
     def get_context_data(self, *args, **kwargs):
+        # Function to add to context if the user has previously subscrived to the event or not
         context = super().get_context_data(**kwargs)
         subscrived = False
         event = get_object_or_404(Event, id=self.kwargs['pk'])
@@ -539,11 +624,21 @@ This class based view displays the details of an event. It has a `test_func`, wh
 ```
 @method_decorator(login_required, name='dispatch')
 class AddEventView(CreateView):
+    """
+    Class based view for creating a new event.
+
+    Args:
+        model: Event
+        form_class = EventForm
+        template_name:add_event.html
+        
+    """
     model = Event
     form_class = EventForm
     template_name = 'add_event.html'
 
     def form_valid(self, form):
+        # Function to check that the form is valid
         form.instance.author = self.request.user
         return super().form_valid(form)
 ```
@@ -553,11 +648,21 @@ Class based view with login required for adding a new event to the site. It uses
 ```
 @method_decorator(login_required, name='dispatch')
 class UpdateEventView(UserPassesTestMixin, UpdateView):
+    """
+    Class based view for updating an event.
+
+    Args:
+        model: Event
+        form_class = UpdateEventForm
+        template_name:update_event.html
+        
+    """
     model = Event
     form_class = UpdateEventForm
     template_name = 'update_event.html'
 
     def test_func(self):
+        # Function to test the access to the view
         return self.request.user.id == self.get_object().author.id
 ```
 Class based view with login required to update an event.
@@ -566,11 +671,20 @@ Class based view with login required to update an event.
 ```
 @method_decorator(login_required, name='dispatch')
 class DeleteEventView(UserPassesTestMixin, DeleteView):
+    """
+    Class based view for delating an event.
+
+    Args:
+        model: Event
+        template_name:delete_event.html
+        
+    """
     model = Event
     template_name = 'delete_event.html'
     success_url = reverse_lazy('home')
 
     def test_func(self):
+        # Function to test the access to the view
         return self.request.user.id == self.get_object().author.id
 ```
 Class based view with login required to delete an event.
@@ -581,6 +695,14 @@ Another part in a django web app are the forms located in the `forms.py` file.
 ### Event Form (website app)
 ```
 class EventForm(forms.ModelForm):
+    """
+    For for creating a new Event.
+    Args:
+        forms 
+
+    Returns:
+        Form
+    """
     class Meta:
         model = Event
         fields = ('title', 'state', 'exerpt', 'description', 'header_image')
@@ -591,6 +713,7 @@ class EventForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
     def clean(self):
+        # Function to test the values of the form
         super(EventForm, self).clean()
         
         description = self.cleaned_data.get('description')
@@ -603,6 +726,14 @@ The django form especifies the fields used from the model Event. It uses widgets
 ### Update Event Form (website app)
 ```
 class UpdateEventForm(forms.ModelForm):
+    """
+    For for updating an Event.
+    Args:
+        forms 
+
+    Returns:
+        Form
+    """
     class Meta:
         model = Event
         fields = ('title', 'state', 'exerpt', 'description', 'header_image')
@@ -619,6 +750,12 @@ This form is used to update an Event.
 ### Create User Form (authentification app)
 ```
 class SignUpForm(UserCreationForm):
+    """
+    Signup form. It uses the UserCreation Form.
+
+    Args:
+        UserCreationForm 
+    """
     email = forms.EmailField()
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
@@ -642,6 +779,12 @@ Form to create an user, it inherits from the django UserCreationForm.
 ### Create Profile Form (authentification app)
 ```
 class SignUpProfileForm(forms.ModelForm):
+    """
+    SignUpProfileForm. It creates a new user Profile. 
+
+    Args:
+        ModelForm
+    """
     class Meta:
         model = Profile
         fields = ('bio', 'profile_pic')
@@ -657,6 +800,12 @@ Form to create a new Profile
 ### Edit User Form (authentification app)
 ```
 class EditUserForm(UserChangeForm):
+    """
+    EditUserForm. It edits a current user
+
+    Args:
+        UserChangeForm 
+    """
     username = forms.CharField(max_length=100)
     email = forms.EmailField()
     first_name = forms.CharField(max_length=100)
@@ -679,6 +828,12 @@ Form to edit a user information.
 ### Edit Profile Form (authentification app)
 ```
 class EditProfileForm(forms.ModelForm):
+    """
+    EditProfileForm. It edits a current profile.
+
+    Args:
+        ModelForm
+    """
 
     class Meta:
         model = Profile
@@ -694,6 +849,12 @@ Form to update the profile information
 ### Password Change Form (authentification app)
 ```
 class PasswordChangingForm(PasswordChangeForm):
+    """
+    PasswordChangingForm. It updates the user password.
+
+    Args:
+        PasswordChangeForm 
+    """
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
