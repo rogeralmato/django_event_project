@@ -1,6 +1,5 @@
 $(document).ready(function() {
     var is_subscrived = $('#subs_func').attr("sub_stat") === 'True';
-    //console.log(is_subscrived);
     if (is_subscrived) {
         $('#subs_func').removeClass("btn-primary").addClass("btn-outline-primary");
         $('#subs_func').html('<i class="fa fa-minus"></i>&nbsp; Unsubscrive');
@@ -19,7 +18,7 @@ $(document).ready(function() {
                 $('#subs_func').removeClass("btn-primary").addClass("btn-outline-primary");
                 $('#subs_func').html('<i class="fa fa-minus"></i>&nbsp; Unsubscrive');
                 $('#description_sub').hide();
-                $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${data.email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertBefore( "#assistant_card" );
+                $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${data.email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertAfter( "#assistant_card" );
             }else {
                 $('#subs_func').removeClass("btn-outline-primary").addClass("btn-primary");
                 $('#subs_func').html('<i class="fa fa-plus"></i>&nbsp; Subscrive');
@@ -44,7 +43,7 @@ $(document).ready(function() {
             $('#email_not_log').hide();
 
         });
-        $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertBefore( "#assistant_card" );
+        $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertAfter( "#assistant_card" );
          
     });
 

@@ -13,15 +13,11 @@ class EventForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
     def clean(self):
-
-        # data from the form is fetched
         super(EventForm, self).clean()
-
+        
         description = self.cleaned_data.get('description')
         if len(description) < 10:
             self._errors['description'] = self.error_class(['A minimum description of the event is required.'])
-        
-        
         return self.cleaned_data
 
 

@@ -54,12 +54,20 @@ This is a Django Events site project. The main idea is to create a site where us
     - [Update Event View](#update-event-view)
     - [Delete Event View](#delete-event-view)
   - [Django Project Forms](#django-project-forms)
+    - [Event Form (website app)](#event-form-website-app)
+    - [Update Event Form (website app)](#update-event-form-website-app)
+    - [Create User Form (authentification app)](#create-user-form-authentification-app)
+    - [Create Profile Form (authentification app)](#create-profile-form-authentification-app)
+    - [Edit Profile Form (authentification app)](#edit-profile-form-authentification-app)
+    - [Password Change Form (authentification app)](#password-change-form-authentification-app)
   - [Django Unit Tests](#django-unit-tests)
   - [Django Functional Tests](#django-functional-tests)
   - [Frontend](#frontend)
     - [Theme Used](#theme-used)
     - [Client Side](#client-side)
   - [What's next?](#whats-next)
+    - [Improving User Experience with React Components](#improving-user-experience-with-react-components)
+    - [Scaling Django Web App](#scaling-django-web-app)
   - [Author](#author)
 
 ## Project Structure
@@ -561,8 +569,143 @@ class DeleteEventView(UserPassesTestMixin, DeleteView):
 Class based view with login required to delete an event.
 
 ## Django Project Forms
+Another part in a django web app are the forms located in the `forms.py` file.
+
+### Event Form (website app)
+```
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('title', 'state', 'exerpt', 'description', 'header_image')
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'state': forms.Select(attrs={'class': 'form-control'}),
+            'exerpt': forms.Textarea(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+    def clean(self):
+        super(EventForm, self).clean()
+        
+        description = self.cleaned_data.get('description')
+        if len(description) < 10:
+            self._errors['description'] = self.error_class(['A minimum description of the event is required.'])
+        return self.cleaned_data
+```
+The django form especifies the fields used from the model Event. It uses widgets to apply styling to the input fields. Finally, the `clean` method it is used to validate the input values.
+
+### Update Event Form (website app)
+```
+class UpdateEventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('title', 'state', 'exerpt', 'description', 'header_image')
+
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'state': forms.Select(attrs={'class': 'form-control'}),
+            'exerpt': forms.Textarea(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+```
+This form is used to update an Event. 
+
+### Create User Form (authentification app)
+```
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField()
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['class'] = 'form-control'
+        self.fields['password2'].widget.attrs['class'] = 'form-control'
+        self.fields['first_name'].widget.attrs['class'] = 'form-control'
+        self.fields['last_name'].widget.attrs['class'] = 'form-control'
+        self.fields['email'].widget.attrs['class'] = 'form-control'
+```
+Form to create an user, it inherits from the django UserCreationForm.
+
+### Create Profile Form (authentification app)
+```
+class SignUpProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('bio', 'profile_pic')
+    
+    def __init__(self, *args, **kwargs):
+        super(SignUpProfileForm, self).__init__(*args, **kwargs)
+
+        self.fields['bio'].widget.attrs['class'] = 'form-control'
+        self.fields['profile_pic'].widget.attrs['class'] = 'form-control'
+```
+Form to create a new Profile
+
+### Edit User Form (authentification app)
+```
+class EditUserForm(UserChangeForm):
+    username = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(EditUserForm, self).__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['first_name'].widget.attrs['class'] = 'form-control'
+        self.fields['last_name'].widget.attrs['class'] = 'form-control'
+        self.fields['email'].widget.attrs['class'] = 'form-control'
+```
+Form to edit a user information.
+
+### Edit Profile Form (authentification app)
+```
+class EditProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('bio', 'profile_pic')
+
+    def __init__(self, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+
+        self.fields['bio'].widget.attrs['class'] = 'form-control'
+```
+Form to update the profile information
+
+### Password Change Form (authentification app)
+```
+class PasswordChangingForm(PasswordChangeForm):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
+    new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
+    new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'type': 'password'}))
+
+    class Meta:
+        model = User
+        fields = ('old_password', 'new_password1', 'new_password2')
+```
+Form to update the user password. It inherits form the Django default PasswordChangeForm.
 
 ## Django Unit Tests
+The unit test is used to test specifics parts of the django web app. The unit tests in this project are located in a `tests`folder inside the `website` folder. The test are organized in url tests, view tests, forms test and model tests. 
+
+In total 30 unit tests that are runned with:
+```
+python3 manage.py test website
+```
+
+![Unit Tests](https://i.ibb.co/Zg7yYnh/Screenshot-2020-07-16-at-14-25-32.png)
 
 ## Django Functional Tests
 As we said, the functional tests are separed in a differnt folder. The tests make use of the selenium-hub container and their nodes (chrome and firefox).
@@ -572,13 +715,100 @@ To run the functional tests:
 python3 manage.py test functional_tests
 ```
 
+The functional tests take around a minute or so.
 
 ## Frontend
+In this section we will go through the frontend part of the project. 
+
 ### Theme Used
+The project has been based in a `html` and `css`theme. The theme provides an html structure which is perfect to develop the Event Django project. 
+
+Github of the theme can be found [HERE](https://github.com/puikinsh/ElaAdmin).
+
+The theme basically uses Bootstrap 4 for styling. 
+
 ### Client Side
+The project also has code executing in the clientside using `jquery`. 
+
+```
+$(document).ready(function() {
+    var is_subscrived = $('#subs_func').attr("sub_stat") === 'True';
+    if (is_subscrived) {
+        $('#subs_func').removeClass("btn-primary").addClass("btn-outline-primary");
+        $('#subs_func').html('<i class="fa fa-minus"></i>&nbsp; Unsubscrive');
+        $('#description_sub').hide();
+    }
+
+    $('#subs_func').click(function(){
+        var eventid;
+        eventid = $(this).attr("data-eventid");
+        var is_subscrived =  $(this).hasClass( "btn-outline-primary" ) === true;
+        var subscription_comment = $('#description_sub').val()
+        $.get("subscription", {event_id: eventid, subs_status:is_subscrived,subs_comment:subscription_comment}, function(data){
+            console.log(data);
+            $('#subs_count').html(data.num_subs);
+            if (data.sub_status) {
+                $('#subs_func').removeClass("btn-primary").addClass("btn-outline-primary");
+                $('#subs_func').html('<i class="fa fa-minus"></i>&nbsp; Unsubscrive');
+                $('#description_sub').hide();
+                $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${data.email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertBefore( "#assistant_card" );
+            }else {
+                $('#subs_func').removeClass("btn-outline-primary").addClass("btn-primary");
+                $('#subs_func').html('<i class="fa fa-plus"></i>&nbsp; Subscrive');
+                $('#description_sub').show();
+            }
+        });
+        
+         
+    });
+
+    $('#not_logged_subs').click(function(){
+        console.log("HEYU");
+        var eventid;
+        eventid = $(this).attr("data-eventid");
+        var subscription_comment = $('#description_not_log').val()
+        var email = $('#email_not_log').val()
+        console.log(email);
+        $.get("subscription_not_logged", {event_id: eventid, subs_email:email,subs_comment:subscription_comment}, function(data){
+            $('#subs_count').html(data.num_subs);
+            $('#description_not_log').hide();
+            $('#not_logged_subs').hide();
+            $('#email_not_log').hide();
+
+        });
+        $( `<div class=\"card-body\" id=\"assistant_card\"><div class=\"stat-text\"><p><strong>Email: </strong>${email}</p></div><div class=\"stat-text\"><p><strong>Comment: </strong>${subscription_comment}</p></div></div>` ).insertBefore( "#assistant_card" );
+         
+    });
+
+
+});
+```
+Those two functions are used in the Event details page for subscriving a user to an event without refreshing the page. It updates the people subscription count automatically and also the list of people going to the event.
+
+Try it:
+
+![jquery](https://i.ibb.co/gFyfH1g/Screenshot-2020-07-16-at-14-33-19.png)
+![jquery](https://i.ibb.co/YBjZ5fS/Screenshot-2020-07-16-at-14-38-47.png)
+
 
 ## What's next?
 
+So what's next? 
+
+### Improving User Experience with React Components
+Nowadays, the best user experiences are Django together with React. React components can be integrated to the django web app. 
+
+### Scaling Django Web App
+Another improvement would be to scale the django web app. Since the project is develop as a microservice we won't need to modify the django project. 
+
+The first option would be to use NGINX and GUNICORN with a structure like this:
+![scaling](https://rukbottoland.com/media/images/arquitectura-django-gunicorn-nginx-supervisor.jpg)
+
+In the previous image we see supervisor, which makes sure that the Gunicorn workers keep working. 
+
+Another option will be to scale using kubernates. 
+
 ## Author
+My name is **Roger Almató Baucells** and you can contact me through email **r.almato.baucells@gmail.com**.
 
 

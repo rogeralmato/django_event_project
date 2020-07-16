@@ -54,10 +54,10 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header"><strong class="card-title pl-2">{% trans "People Going" %}</strong></div>
+            <div class="card-header" id="assistant_card"><strong class="card-title pl-2">{% trans "People Going" %}</strong></div>
             {% for subs in event.subscriptions.all %}
             
-                <div class="card-body" id="assistant_card">
+                <div class="card-body" >
                                 {% if subs.assistant %}
                                 <div class="stat-text"><p><strong>Email: </strong>{{subs.assistant.email}}</p></div>
                                 <div class="stat-text"><p><strong>Comment: </strong>{{subs.comment}}</p></div>
