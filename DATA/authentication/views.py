@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 from .forms import SignUpForm, EditUserForm, PasswordChangingForm, SignUpProfileForm, EditProfileForm
 
-from website.models import Profile, Event
+from website.models import Profile, Event, EventSubscription
 
 class PasswordChangeView(PasswordChangeView):
     form_class = PasswordChangingForm
@@ -65,6 +65,9 @@ class ProfilePageView(DetailView):
     def get_context_data(self, *args, **kwargs):
         users = Profile.objects.all()
         page_user = get_object_or_404(Profile, id=self.kwargs['pk'])
+        all_events = EventSubscription.objects.all()
+        user_subscriptions = all_events.filter(assistant__id=page_user.user.id)
+        
         events = Event.objects.filter(author__id = page_user.user_id)
         num_public = events.filter(state__state = 'public').count()
         num_private = events.filter(state__state = 'private').count()
@@ -75,5 +78,6 @@ class ProfilePageView(DetailView):
         context['num_public_events'] = num_public
         context['num_private_events'] = num_private
         context['num_draft_events'] = num_draft
+        context['user_subscriptions'] = user_subscriptions
         return context
 

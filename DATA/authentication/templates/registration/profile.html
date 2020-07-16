@@ -66,7 +66,18 @@
       </div>
   </div>
   </div>
+  
     </main>
+    <div class="card">
+        <h2>{% trans "Events Going" %}</h2>
+        <div class="card-body">
+            {% for event_sub in user_subscriptions.all %}
+            <div class="media-body p-2">
+                <h4>* {{event_sub.event_set.first.title}}</h4>
+            </div>
+            {% endfor %}
+        </div>
+      </div> 
     
 
   </body>
