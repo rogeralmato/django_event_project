@@ -50,6 +50,12 @@ This is a Django Events site project. The main idea is to create a site where us
 
 ## Project Structure
 
+The project is structured using `docker-compose`, running in different containers, as we will see in the following sections. 
+
+The django part is inside it's own container and has a volume *DATA* (see DATA folder in the project tree). The same happens with the postgres container which keeps the data in another volume represented by the *postgres-data* folder. 
+
+The tree of the project is the following:
+
 ```
 opportiunity_network
 ├── DATA
@@ -95,17 +101,7 @@ opportiunity_network
 │   │   │   ├── css
 │   │   │   │   └── styles.css
 │   │   │   └── images
-│   │   │       ├── background.jpg
-│   │   │       ├── cat.jpg
-│   │   │       ├── cat2.jpg
-│   │   │       ├── cat3.jpg
-│   │   │       ├── cat3.png
-│   │   │       ├── contact-background.jpg
-│   │   │       ├── experience-background.jpg
-│   │   │       ├── github.svg
-│   │   │       ├── linkedin.svg
-│   │   │       ├── main-background.jpg
-│   │   │       └── twitter.svg
+│   │   │       └── ...
 │   │   ├── error_pages
 │   │   │   └── css
 │   │   │       └── style.css
@@ -113,78 +109,20 @@ opportiunity_network
 │   │       ├── css
 │   │       │   ├── cs-skin-elastic.css
 │   │       │   ├── lib
-│   │       │   │   ├── chosen
-│   │       │   │   │   ├── chosen-sprite.png
-│   │       │   │   │   ├── chosen-sprite@2x.png
-│   │       │   │   │   ├── chosen.css
-│   │       │   │   │   └── chosen.min.css
-│   │       │   │   ├── datatable
-│   │       │   │   │   ├── buttons.bootstrap.min.css
-│   │       │   │   │   ├── buttons.dataTables.min.css
-│   │       │   │   │   └── dataTables.bootstrap.min.css
-│   │       │   │   └── vector-map
-│   │       │   │       └── jqvmap.min.css
+│   │       │       └── ...
 │   │       │   ├── style.css
 │   │       │   └── style.css.map
 │   │       ├── fonts
-│   │       │   └── icomoon
-│   │       │       ├── icomoon.eot
-│   │       │       ├── icomoon.svg
-│   │       │       ├── icomoon.ttf
-│   │       │       ├── icomoon.woff
-│   │       │       └── index.html
+│   │       │   └── ...
 │   │       ├── images
-│   │       │   ├── avatar
-│   │       │   │   ├── 1.jpg
-│   │       │   │   ├── 2.jpg
-│   │       │   │   ├── 3.jpg
-│   │       │   │   ├── 4.jpg
-│   │       │   │   ├── 5.jpg
-│   │       │   │   ├── 6.jpg
-│   │       │   │   ├── 64-1.jpg
-│   │       │   │   └── 64-2.jpg
-│   │       │   ├── favicon.jpg
-│   │       │   ├── favicon.png
-│   │       │   ├── logo.jpg
-│   │       │   ├── logo.png
-│   │       │   ├── logo.psd
-│   │       │   └── logo2.png
+│   │       │   └──...
 │   │       ├── js
 │   │       │   ├── dashboard.js
 │   │       │   ├── init
-│   │       │   │   ├── chartjs-init.js
-│   │       │   │   ├── datatables-init.js
-│   │       │   │   ├── flot-chart-init.js
-│   │       │   │   ├── fullcalendar-init.js
-│   │       │   │   ├── gmap-init.js
-│   │       │   │   ├── peitychart-init.js
-│   │       │   │   ├── vector-init.js
-│   │       │   │   └── weather-init.js
+│   │       │   │   └── ...
 │   │       │   ├── jquery.js
 │   │       │   ├── lib
-│   │       │   │   ├── chosen
-│   │       │   │   │   ├── chosen.jquery.js
-│   │       │   │   │   ├── chosen.jquery.min.js
-│   │       │   │   │   ├── chosen.proto.js
-│   │       │   │   │   └── chosen.proto.min.js
-│   │       │   │   ├── data-table
-│   │       │   │   │   ├── buttons.bootstrap.min.js
-│   │       │   │   │   ├── buttons.colVis.min.js
-│   │       │   │   │   ├── buttons.flash.min.js
-│   │       │   │   │   ├── buttons.html5.min.js
-│   │       │   │   │   ├── buttons.print.min.js
-│   │       │   │   │   ├── dataTables.bootstrap.min.js
-│   │       │   │   │   ├── dataTables.buttons.min.js
-│   │       │   │   │   ├── datatables.min.js
-│   │       │   │   │   ├── jquery-1.12.4.js
-│   │       │   │   │   ├── jquery.dataTables.min.js
-│   │       │   │   │   ├── jszip.min.js
-│   │       │   │   │   ├── pdfmake.min.js
-│   │       │   │   │   └── vfs_fonts.js
-│   │       │   │   └── gmap
-│   │       │   │       ├── gmapApi.js
-│   │       │   │       ├── gmaps.js
-│   │       │   │       └── gmaps.min.js
+│   │       │   │   └── ...
 │   │       │   ├── main.js
 │   │       │   ├── rango-ajax.js
 │   │       │   ├── vmap.sampledata.js
@@ -232,17 +170,26 @@ opportiunity_network
 ├── docker-compose.yml
 ├── postgres-data
 └── requirements.txt
-
-
 ```
 
 ### Django
+This project builds an event web platform to connect event organizers with the assitants. Django is used as a web framework to build the web app, and as a consequence all the project revolves around this part.
+
 ### Docker
+The project is develop as a microservice hence Docker is used to contenerize the different parts of this project. The idea is that the Django web app could be scalable in the future.
+
+Docker is also used to encapsulate the django project and all it's dependencies together, so the web app can easily be installed in another pc or server. 
+
 
 ## Installation
+This section will give a coppy of this project up and running in your computer or server.
 
 ### Requirements
+The only requirement is to hava a computer or server in which `Docker` can be installed. An installation guide for Docker can be found [HERE](https://docs.docker.com/engine/install/).
+
 ### Installation
+Once docker is installed on your machine we can proceed with the project installation.
+
 ### Deployment
 
 ## System Architecture
