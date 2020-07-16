@@ -13,6 +13,13 @@ This is a Django Events site project. The main idea is to create a site where us
 * An event subscription contains the user name, email and "comment".
 * The app needs to support at least one language other than the default English language.
 
+ADMIN CREDENTIALS:
+```
+username: admin
+password: password
+```
+
+
 **TABLE OF CONTENTS**
 - [DJANGO PROJECT](#django-project)
   - [Project Structure](#project-structure)
