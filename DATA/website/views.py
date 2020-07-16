@@ -25,12 +25,7 @@ class HomeView(ListView):
             return Event.objects.filter(~Q(state__state = 'draft')).order_by(*ordering)
         else:
             return Event.objects.filter(state__state = 'public').order_by(*ordering)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        subscriptions = EventSubscription.objects.all()
-        context['subscriptions'] = subscriptions
-        return context
+        
 
 @method_decorator(login_required, name='dispatch')
 class UserEventView(ListView):

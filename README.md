@@ -42,11 +42,17 @@ This is a Django Events site project. The main idea is to create a site where us
     - [Functional tests Folder](#functional-tests-folder)
   - [Django Project Models](#django-project-models)
     - [Event Model (website)](#event-model-website)
-    - [EventState  Model  (website)](#eventstate-model-website)
+    - [EventState Model (website)](#eventstate-model-website)
     - [EventSubscription Model (website)](#eventsubscription-model-website)
     - [Profile Model (website)](#profile-model-website)
     - [User Model (authentification)](#user-model-authentification)
   - [Django Project Views](#django-project-views)
+    - [Home View](#home-view)
+    - [User Draft Events View](#user-draft-events-view)
+    - [Event Detail View](#event-detail-view)
+    - [Add Event View](#add-event-view)
+    - [Update Event View](#update-event-view)
+    - [Delete Event View](#delete-event-view)
   - [Django Project Forms](#django-project-forms)
   - [Django Unit Tests](#django-unit-tests)
   - [Django Functional Tests](#django-functional-tests)
@@ -398,12 +404,161 @@ class Event(models.Model):
 ```
 The Event model has all the information which an event needs. Point out that it has a OneToMany (`ForeignKey`) relationship with the State model and a ManyToMany relationship with the EventSubscription model.
 
-### EventState  Model  (website)
+### EventState Model (website)
+```
+class EventState(models.Model):
+    state = models.CharField(max_length=100, primary_key=True)
+
+    def __str__(self):
+        return self.state
+
+    def get_absolute_url(self):
+        return reverse('home')
+```
+The EventState model has only a state field. It contains three possible EventState in the database: public, private or draft. The users cannot add or delete any of the those three EventState.
+
 ### EventSubscription Model (website)
+```
+class EventSubscription(models.Model):
+    assistant = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, default=None)
+    
+    def clean(self):
+        super(EventSubscription, self).clean()
+        if self.email is None and self.assistant is None:
+            raise ValidationError('Error! Please fill the fields.')
+```
+The EventSubscription comes from a many to many relationship with the Events. The `clean` function ensures that or either the user is logged in (for which we have his/her credentials) or gives the email.  
+
 ### Profile Model (website)
+```
+class Profile(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    bio = models.TextField()
+    profile_pic = models.ImageField(upload_to='images/profile/', default='images/profile/default_profile.png')
+
+    def __str__(self):
+        return str(self.user)
+```
+As we previously said, the `user (django auth)` model has been extended in order to add information to users. To do that, a OneToOne relationship has been used for the user, and a bio and an profile pictures field has been added.
+
 ### User Model (authentification)
+From the authentification app in the django project, we have the default `auth` model from django.
 
 ## Django Project Views
+Another part in a django project are the views. For the views, the project only uses class based views. 
+
+### Home View
+```
+class HomeView(ListView):
+    model = Event
+    template_name = 'homeview.html'
+    
+    def get_queryset(self):
+        ordering = ['-publication_date', '-id']
+        if self.request.user.is_authenticated:
+            return Event.objects.filter(~Q(state__state = 'draft')).order_by(*ordering)
+        else:
+            return Event.objects.filter(state__state = 'public').order_by(*ordering)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscriptions = EventSubscription.objects.all()
+        context['subscriptions'] = subscriptions
+        return context
+```
+It is a class based views which inherits from the ListView. It has a `get_queryset` method in order to filter the Event types if the user is authenticated or not.
+
+### User Events View
+```
+@method_decorator(login_required, name='dispatch')
+class UserEventView(ListView):
+    model = Event
+    template_name = 'homeview.html'
+    
+    def get_queryset(self):
+        ordering = ['-publication_date', '-id']
+        return Event.objects.filter(author__id = self.request.user.id).filter(~Q(state__state = 'draft')).order_by(*ordering)
+```
+It is a class based view which requires the user to be logged in. It has a `get_queryset` method to get all the user events which are not draft.
+
+### User Draft Events View
+```
+@method_decorator(login_required, name='dispatch')
+class UserDraftEventView(ListView):
+    model = Event
+    template_name = 'homeview.html'
+    
+    def get_queryset(self):
+        ordering = ['-publication_date', '-id']
+        return Event.objects.filter(author__id = self.request.user.id).filter(state__state = 'draft').order_by(*ordering)
+```
+Similar to the previous view, but it displays the user draft events.
+
+### Event Detail View
+```
+class EventDetailView(UserPassesTestMixin, DetailView):
+    model = Event
+    template_name = 'event_details.html'
+
+    def test_func(self):
+        event = self.get_object()
+        if self.request.user.is_authenticated:
+            return True
+        else:
+            return event.state.state == 'public' 
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscrived = False
+        event = get_object_or_404(Event, id=self.kwargs['pk'])
+        if event.subscriptions.filter(assistant__id=self.request.user.id).exists():
+            subscrived = True
+        context['is_subscrived'] = subscrived
+        return context
+```
+This class based view displays the details of an event. It has a `test_func`, which ensures that if the user is not logged in, the event is 'public'. The `get_context_data` method is used for telling to the view if the user has been subscrived to this event previously (if logged in).
+
+### Add Event View
+```
+@method_decorator(login_required, name='dispatch')
+class AddEventView(CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'add_event.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+```
+Class based view with login required for adding a new event to the site. It uses a `form_valid` method to check if the form is valid and add the author to the new event.
+
+### Update Event View
+```
+@method_decorator(login_required, name='dispatch')
+class UpdateEventView(UserPassesTestMixin, UpdateView):
+    model = Event
+    form_class = UpdateEventForm
+    template_name = 'update_event.html'
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().author.id
+```
+Class based view with login required to update an event.
+
+### Delete Event View
+```
+@method_decorator(login_required, name='dispatch')
+class DeleteEventView(UserPassesTestMixin, DeleteView):
+    model = Event
+    template_name = 'delete_event.html'
+    success_url = reverse_lazy('home')
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().author.id
+```
+Class based view with login required to delete an event.
 
 ## Django Project Forms
 
