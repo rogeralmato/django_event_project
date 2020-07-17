@@ -21,7 +21,6 @@ services:
     depends_on:
       - db
       - selenium_hub
-      - selenium_chrome
 
   selenium_hub:
     container_name: selenium_hub
